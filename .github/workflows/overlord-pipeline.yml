@@ -1,0 +1,11 @@
+name: Overlord build/deploy pipeline
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build services
+        run: python ./build.py --build
