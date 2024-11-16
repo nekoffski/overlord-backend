@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64/v8 node:20-alpine
+FROM --platform=linux/arm/v8 node:20-alpine
 WORKDIR /overlord-web/
 
 COPY public /overlord-web/public
