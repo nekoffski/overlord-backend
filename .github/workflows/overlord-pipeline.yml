@@ -8,4 +8,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build services
-        run: ./build.sh --build
+        env:
+          DOCKER_USER: ${{ secrets.DOCKER_AUTH_USER }}
+          DOCKER_TOKEN: ${{ secrets.DOCKER_AUTH_TOKEN }}
+        run: ./build.sh
