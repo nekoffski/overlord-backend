@@ -1,5 +1,0 @@
-services:
-  web:
-    image: "nyek0/overlord-web:latest"
-    ports:
-      - "8000:3001"
