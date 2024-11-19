@@ -6,9 +6,10 @@ import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import AppNavbar from "./components/AppNavbar";
 import Header from "./components/Header";
-import MainGrid from "./components/MainGrid";
 import SideMenu from "./components/SideMenu";
 import AppTheme from "../shared-theme/AppTheme";
+import MainContent from "./components/MainContent";
+
 import {
   chartsCustomizations,
   dataGridCustomizations,
@@ -24,12 +25,14 @@ const xThemeComponents = {
 };
 
 export default function Dashboard(props) {
+  const [menuIndex, setMenuIndex] = React.useState(0);
+
   return (
     <AppTheme {...props} themeComponents={xThemeComponents}>
       <CssBaseline enableColorScheme />
       <Box sx={{ display: "flex" }}>
-        <SideMenu />
-        <AppNavbar />
+        <SideMenu menuIndex={menuIndex} setMenuIndex={setMenuIndex} />
+        {/* <AppNavbar /> */}
         {/* Main content */}
         <Box
           component="main"
@@ -50,8 +53,8 @@ export default function Dashboard(props) {
               mt: { xs: 8, md: 0 },
             }}
           >
-            <Header />
-            <MainGrid />
+            <Header menuIndex={menuIndex} />
+            <MainContent menuIndex={menuIndex} />
           </Stack>
         </Box>
       </Box>
