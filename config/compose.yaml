@@ -8,3 +8,19 @@ services:
     ports:
       - "5551:5551/tcp"
       - "5552:5552/udp"
+    networks:
+      - internal
+  api-gateway:
+    image: "nyek0/overlord-api-gateway:latest"
+    environment:
+      LOG_API_HOST: log-server
+      LOG_API_PORT: 5552
+      LOG_LEVEL: DEBUG
+    networks:
+      - internal
+    depends_on:
+      log-server:
+        condition: service_started
+networks:
+  internal:
+    driver: bridge

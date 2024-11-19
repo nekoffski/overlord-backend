@@ -1,0 +1,27 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "overlord"
+version = "0.1.0"
+authors = [
+  { name="Kacper Czyz", email="kacper.czyz@protonmail.com" },
+]
+dependencies = [
+    "loguru"
+]
+description = "Utilities for overlord"
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[tool.setuptools.package-data]
+"pkgname" = ["py.typed"]
+
+[tool.setuptools.packages.find]
+where = ["src/overlord"]

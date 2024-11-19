@@ -94,7 +94,7 @@ def tail_log_file(file_content: str, lines: int) -> str:
 
 def register_endpoints(app: sanic.Sanic):
     @app.get('/')
-    async def get_log_file(request):
+    async def get_log_file_endpoint(request):
         async with aiofiles.open(LOG_FILE, 'r+') as f:
             log_file_content = await f.read()
 
@@ -104,7 +104,7 @@ def register_endpoints(app: sanic.Sanic):
             return text(log_file_content)
 
     @app.post('/rotate')
-    async def rotate_log_file(_):
+    async def rotate_log_file_endpoint(_):
         await rotate_log_file()
         return empty(status=201)
 
