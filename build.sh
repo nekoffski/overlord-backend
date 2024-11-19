@@ -16,7 +16,7 @@ for service_path in $services_path/*; do
     docker image build -t overlord-$service_name:latest --file $service_path/Dockerfile .
     docker tag overlord-$service_name $DOCKER_USER/overlord-$service_name
 
-    if [ "$my_bool" = true ]; then
+    if [ "$push" = true ]; then
         docker push $DOCKER_USER/overlord-$service_name
     fi
     
