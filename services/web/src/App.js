@@ -1,11 +1,8 @@
 import "./App.css";
+import Dashboard from "./dashboard/Dashboard.js";
 
 function App() {
-  return (
-    <div>
-      <header>Hello overlord!</header>
-    </div>
-  );
+  return <Dashboard></Dashboard>;
 }
 
 export default App;
