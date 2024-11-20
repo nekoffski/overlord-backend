@@ -1,8 +1,0 @@
-syntax = "proto3";
-
-message PingRequest {}
-message PingResponse {}
-
-service SystemStatisticsProvider {
-    rpc ping(PingRequest) returns (PingResponse) {}
-}

@@ -1,0 +1,15 @@
+syntax = "proto3";
+package overlord;
+
+import "google/protobuf/timestamp.proto";
+
+message PingRequest {
+}
+
+message PingResponse {
+    google.protobuf.Timestamp timestamp = 1;
+}
+
+service Pinger {
+    rpc ping(PingRequest) returns (PingResponse) {}
+}

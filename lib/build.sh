@@ -8,7 +8,11 @@ python -m pip install build grpcio-tools
 
 pushd lib
 
-python -m grpc_tools.protoc -Iproto --python_out=./dist --pyi_out=./dist --grpc_python_out=./dist ./proto/*
-cp ./dist/*{.py,.pyi} ./src/overlord/models
-
+rm ./src/overlord/proto/*pb2*.py
+python -m grpc_tools.protoc -Iproto --python_out=./src/overlord/proto \
+    --pyi_out=./src/overlord/proto --grpc_python_out=./src/overlord/proto ./proto/*
+sed -i 's/^import \(.\+\) as/from . import \1 as/' ./src/overlord/proto/*grpc.py
 python -m build
+
+protoc -Iproto --js_out=import_style=commonjs:dist \
+    --grpc-web_out=import_style=commonjs,mode=grpcwebtext:dist ./proto/*
