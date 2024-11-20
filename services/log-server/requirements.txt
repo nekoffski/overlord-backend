@@ -1,3 +1,4 @@
-sanic
 aiofiles
-loguru
+overlord
+protobuf
+grpcio

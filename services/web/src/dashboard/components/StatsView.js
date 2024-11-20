@@ -14,23 +14,28 @@ function toMillis(seconds, nanoseconds) {
 const maxLatencyElements = 250;
 
 class ServerInfo {
-  latencies = [];
+  requestLatencies = [];
+  responseLatencies = [];
+  name = "";
+
   isRunning = false;
 
-  constructor() {
+  constructor(name) {
+    this.name = name;
     this.invalidate();
   }
 
   invalidate() {
     this.isRunning = false;
-    this.latencies = Array(maxLatencyElements).fill(0);
+    this.requestLatencies = Array(maxLatencyElements).fill(0);
+    this.responseLatencies = Array(maxLatencyElements).fill(0);
   }
 }
 
 export default class StatsView extends React.Component {
   state = {
-    api_gateway: new ServerInfo(),
-    log_server: new ServerInfo(),
+    api_gateway: new ServerInfo("API Gateway"),
+    log_server: new ServerInfo("Log Server"),
   };
 
   constructor() {
@@ -41,7 +46,7 @@ export default class StatsView extends React.Component {
   }
 
   ping() {
-    const now = Date.now();
+    const start = Date.now();
     let request = new PingRequest();
 
     this.apiPinger.ping(request, {}, (err, res) => {
@@ -53,11 +58,15 @@ export default class StatsView extends React.Component {
       } else {
         const timestamp = res.toObject().timestamp;
         const timestampMillis = toMillis(timestamp.seconds, timestamp.nanos);
-        const delay = timestampMillis - now;
+
+        const requestDelay = timestampMillis - start;
+        const responseDelay = Date.now() - timestampMillis;
 
         server.isRunning = true;
-        server.latencies.push(delay);
-        server.latencies.shift();
+        server.requestLatencies.push(requestDelay);
+        server.requestLatencies.shift();
+        server.responseLatencies.push(responseDelay);
+        server.responseLatencies.shift();
       }
 
       this.setState({
@@ -66,7 +75,7 @@ export default class StatsView extends React.Component {
 
       setTimeout(() => {
         this.ping();
-      }, 500);
+      }, 750);
     });
   }
 
@@ -84,18 +93,10 @@ export default class StatsView extends React.Component {
           sx={{ mb: (theme) => theme.spacing(2) }}
         >
           <Grid size={{ xs: 12, md: 6 }}>
-            <SessionsChart
-              serviceName={"API Gateway"}
-              running={this.state.api_gateway.isRunning}
-              data={this.state.api_gateway.latencies}
-            />
+            <SessionsChart data={this.state.api_gateway} />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <SessionsChart
-              serviceName={"Log Server"}
-              running={this.state.log_server.isRunning}
-              data={this.state.log_server.latencies}
-            />
+            <SessionsChart data={this.state.log_server} />
           </Grid>
         </Grid>
       </Box>

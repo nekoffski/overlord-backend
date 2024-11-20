@@ -23,7 +23,7 @@ AreaGradient.propTypes = {
   id: PropTypes.string.isRequired,
 };
 
-export default function SessionsChart({ serviceName, running, data }) {
+export default function SessionsChart({ data }) {
   const theme = useTheme();
 
   const colorPalette = [
@@ -36,7 +36,7 @@ export default function SessionsChart({ serviceName, running, data }) {
     <Card variant="outlined" sx={{ width: "100%" }}>
       <CardContent>
         <Typography component="h2" variant="subtitle2" gutterBottom>
-          {serviceName}
+          {data.name}
         </Typography>
         <Stack sx={{ justifyContent: "space-between" }}>
           <Stack
@@ -48,7 +48,7 @@ export default function SessionsChart({ serviceName, running, data }) {
             }}
           >
             <Typography variant="h4" component="p">
-              {running ? "Up" : "Down"}
+              {data.isRunning ? "Up" : "Down"}
             </Typography>
           </Stack>
           <Typography variant="caption" sx={{ color: "text.secondary" }}>
@@ -62,50 +62,30 @@ export default function SessionsChart({ serviceName, running, data }) {
           series={[
             {
               id: "direct",
-              label: "Direct",
+              label: "Request",
               showMark: false,
               curve: "linear",
               stack: "total",
               area: true,
               stackOrder: "ascending",
-              data: running ? data : [],
+              data: data.isRunning ? data.requestLatencies : [],
+              color: "orange",
             },
-            // {
-            //   id: "referral",
-            //   label: "Referral",
-            //   showMark: false,
-            //   curve: "linear",
-            //   stack: "total",
-            //   area: true,
-            //   stackOrder: "ascending",
-            //   data: [
-            //     500, 900, 700, 1400, 1100, 1700, 2300, 2000, 2600, 2900, 2300,
-            //     3200, 3500, 3800, 4100, 4400, 2900, 4700, 5000, 5300, 5600,
-            //     5900, 6200, 6500, 5600, 6800, 7100, 7400, 7700, 8000,
-            //   ],
-            // },
-            // {
-            //   id: "organic",
-            //   label: "Organic",
-            //   showMark: false,
-            //   curve: "linear",
-            //   stack: "total",
-            //   stackOrder: "ascending",
-            //   data: [
-            //     1000, 1500, 1200, 1700, 1300, 2000, 2400, 2200, 2600, 2800,
-            //     2500, 3000, 3400, 3700, 3200, 3900, 4100, 3500, 4300, 4500,
-            //     4000, 4700, 5000, 5200, 4800, 5400, 5600, 5900, 6100, 6300,
-            //   ],
-            //   area: true,
-            // },
+            {
+              id: "referral",
+              label: "Response",
+              showMark: false,
+              curve: "linear",
+              stack: "total",
+              area: true,
+              stackOrder: "ascending",
+              data: data.isRunning ? data.responseLatencies : [],
+            },
           ]}
           height={250}
           margin={{ left: 50, right: 20, top: 20, bottom: 20 }}
           grid={{ horizontal: true }}
           sx={{
-            "& .MuiAreaElement-series-organic": {
-              fill: "url('#organic')",
-            },
             "& .MuiAreaElement-series-referral": {
               fill: "url('#referral')",
             },
@@ -119,7 +99,6 @@ export default function SessionsChart({ serviceName, running, data }) {
             },
           }}
         >
-          <AreaGradient color={theme.palette.primary.dark} id="organic" />
           <AreaGradient color={theme.palette.primary.main} id="referral" />
           <AreaGradient color={theme.palette.primary.light} id="direct" />
         </LineChart>

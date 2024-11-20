@@ -1,0 +1,15 @@
+syntax = "proto3";
+package overlord;
+
+message RotateRequest {}
+message RotateResponse {}
+
+message GetLogsRequest {}
+message GetLogsResponse {
+    repeated string logs = 1;
+}
+
+service LogServer {
+    rpc rotate(RotateRequest) returns (RotateResponse) {}
+    rpc getLogs(GetLogsRequest) returns (GetLogsResponse) {}
+}
