@@ -76,6 +76,8 @@ docs/_build/
 .pybuilder/
 target/
 
+lib/src/overlord/models/*pb2*
+
 # Jupyter Notebook
 .ipynb_checkpoints
 

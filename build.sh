@@ -8,15 +8,14 @@ push=false
 
 # build python lib
 lib/build.sh
-
-python_lib=$cwd/lib/dist
+lib_dist=$cwd/lib/dist
 
 echo $DOCKER_TOKEN | docker login --username $DOCKER_USER --password-stdin
 
 for service_path in $services_path/*; do
     service_name=$(basename $service_path)
     echo "building" $service_name
-    cp -r $python_lib $service_path/dist
+    cp -r $lib_dist/*.gz $service_path/dist
 
     pushd $service_path
     docker image build -t overlord-$service_name:latest \
