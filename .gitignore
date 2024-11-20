@@ -1,5 +1,8 @@
 .vscode
 
+services/web/src/dashboard/components/proto/*.js
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -76,7 +79,7 @@ docs/_build/
 .pybuilder/
 target/
 
-lib/src/overlord/models/*pb2*
+lib/src/overlord/proto/*pb2*
 
 # Jupyter Notebook
 .ipynb_checkpoints

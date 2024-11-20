@@ -12,9 +12,11 @@ lib_dist=$cwd/lib/dist
 
 echo $DOCKER_TOKEN | docker login --username $DOCKER_USER --password-stdin
 
-for service_path in $services_path/*; do
+build_container () {
+    service_path=$1
     service_name=$(basename $service_path)
     echo "building" $service_name
+    mkdir $service_path/dist
     cp -r $lib_dist/*.gz $service_path/dist
 
     pushd $service_path
@@ -28,4 +30,12 @@ for service_path in $services_path/*; do
     fi
 
     popd
-done
+}
+
+if [ "$1" = "all" ]; then 
+    for service_path in $services_path/*; do
+        build_container $service_path
+    done
+else
+    build_container $services_path/$1
+fi
