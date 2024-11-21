@@ -6,6 +6,8 @@ import SessionsChart from "./SessionsChart";
 
 import { PingerClient } from "./proto/ping_grpc_web_pb";
 import { PingRequest } from "./proto/ping_pb";
+import { StatisticsProviderClient } from "./proto/stats_grpc_web_pb";
+import { GetStatisticsRequest } from "./proto/stats_pb";
 
 function toMillis(seconds, nanoseconds) {
   return Math.round(seconds * 1000 + nanoseconds / 1_000_000);
@@ -13,15 +15,22 @@ function toMillis(seconds, nanoseconds) {
 
 const maxLatencyElements = 250;
 
-class ServerInfo {
+class ServiceInfo {
+  name = "";
   requestLatencies = [];
   responseLatencies = [];
-  name = "";
 
-  isRunning = false;
-
-  constructor(name) {
+  constructor(name, requestLatencies, responseLatencies, isRunning) {
     this.name = name;
+    this.requestLatencies = requestLatencies;
+    this.responseLatencies = responseLatencies;
+    this.isRunning = isRunning;
+  }
+}
+
+class ApiInfo extends ServiceInfo {
+  constructor() {
+    super("API Gateway", [], [], false);
     this.invalidate();
   }
 
@@ -34,18 +43,51 @@ class ServerInfo {
 
 export default class StatsView extends React.Component {
   state = {
-    api_gateway: new ServerInfo("API Gateway"),
-    log_server: new ServerInfo("Log Server"),
+    api_gateway: new ApiInfo(),
+    services: [],
   };
 
   constructor() {
     super();
 
+    this.statsProvider = new StatisticsProviderClient("http://127.0.0.1:8080/");
     this.apiPinger = new PingerClient("http://127.0.0.1:8080/");
-    this.ping();
+    this.pingApi();
+    this.gatherStatistics();
   }
 
-  ping() {
+  gatherStatistics() {
+    this.statsProvider.getStatistics(
+      new GetStatisticsRequest(),
+      [],
+      (err, res) => {
+        let services = [];
+
+        if (err) {
+          console.error(err);
+        } else {
+          let model = res.toObject();
+          services = Array.from(model.servicesList, (service) => {
+            return new ServiceInfo(
+              service.name,
+              service.requestLatenciesList,
+              service.responseLatenciesList,
+              service.isRunning
+            );
+          });
+        }
+
+        this.setState({
+          services: services,
+        });
+        setTimeout(() => {
+          this.gatherStatistics();
+        }, 750);
+      }
+    );
+  }
+
+  pingApi() {
     const start = Date.now();
     let request = new PingRequest();
 
@@ -74,7 +116,7 @@ export default class StatsView extends React.Component {
       });
 
       setTimeout(() => {
-        this.ping();
+        this.pingApi();
       }, 750);
     });
   }
@@ -95,9 +137,13 @@ export default class StatsView extends React.Component {
           <Grid size={{ xs: 12, md: 6 }}>
             <SessionsChart data={this.state.api_gateway} />
           </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <SessionsChart data={this.state.log_server} />
-          </Grid>
+          {this.state.services.map((service, _) => {
+            return (
+              <Grid size={{ xs: 12, md: 6 }}>
+                <SessionsChart data={service} />
+              </Grid>
+            );
+          })}
         </Grid>
       </Box>
     );

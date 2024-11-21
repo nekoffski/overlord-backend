@@ -47,8 +47,16 @@ export default function SessionsChart({ data }) {
               gap: 1,
             }}
           >
-            <Typography variant="h4" component="p">
-              {data.isRunning ? "Up" : "Down"}
+            <Typography
+              variant="h4"
+              component="p"
+              sx={{
+                color: data.isRunning
+                  ? "rgba(71, 217, 76, 0.8)"
+                  : "rgba(217, 71, 71, 0.8)",
+              }}
+            >
+              {data.isRunning ? "Healthy" : "Down"}
             </Typography>
           </Stack>
           <Typography variant="caption" sx={{ color: "text.secondary" }}>

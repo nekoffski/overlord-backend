@@ -1,0 +1,19 @@
+syntax = "proto3";
+package overlord;
+
+message GetStatisticsRequest {}
+
+message ServiceStatistics {
+    string name = 1;
+    bool is_running = 2;
+    repeated uint32 request_latencies = 3;
+    repeated uint32 response_latencies = 4;
+}
+
+message GetStatisticsResponse {
+    repeated ServiceStatistics services = 1;
+}
+
+service StatisticsProvider {
+    rpc getStatistics(GetStatisticsRequest) returns (GetStatisticsResponse) {}
+}

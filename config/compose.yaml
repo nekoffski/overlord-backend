@@ -6,7 +6,7 @@ services:
   log-server:
     image: "nyek0/overlord-log-server:latest"
     ports:
-      - "5551:5551/tcp"
+      - "5555:5555/tcp"
       - "5552:5552/udp"
     networks:
       - internal
