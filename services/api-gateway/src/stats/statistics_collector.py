@@ -14,14 +14,14 @@ class StatisticsCollector(object):
         self.interval = interval
         self.services = [
             Service('Log Server', 'log-server', 5555),
-            Service('Mi Proxy', 'mi-proxy', 1337)
+            Service('Mi Proxy', 'mi-proxy', 5555)
         ]
 
     async def start(self):
         log.info("Statistics collector starting")
+        log.info("Gathering stats every: {}s", self.interval)
 
         while True:
-            log.debug("Pinging services")
             await asyncio.gather(*[
                 service.ping() for service in self.services
             ])

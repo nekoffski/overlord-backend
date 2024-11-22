@@ -4,8 +4,15 @@ import grpc
 
 
 class RequestLogger(grpc.aio.ServerInterceptor):
-    def __init__(self, log):
+    def __init__(self, log, filters):
         self.log = log
+        self.filters = filters
+
+    def should_skip(self, method_name):
+        for f in self.filters:
+            if f in method_name:
+                return True
+        return False
 
     async def intercept_service(
         self,
@@ -14,6 +21,7 @@ class RequestLogger(grpc.aio.ServerInterceptor):
         ],
         handler_call_details: grpc.HandlerCallDetails,
     ) -> grpc.RpcMethodHandler:
-        self.log.debug(
-            "Received grpc request: {}", handler_call_details.method)
+        if not self.should_skip(handler_call_details.method):
+            self.log.debug(
+                "Received grpc request: {}", handler_call_details.method)
         return await continuation(handler_call_details)

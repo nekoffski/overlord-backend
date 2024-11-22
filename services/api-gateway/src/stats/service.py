@@ -30,8 +30,6 @@ class Service(object):
         self.response_latencies = [0] * MAX_LATENCIES
 
     async def ping(self):
-        log.debug("Pinging {} - {}:{}", self.name, self.host, self.port)
-
         async with grpc.aio.insecure_channel(f"{self.host}:{self.port}") as channel:
             try:
                 client = proto.PingerStub(channel)
@@ -43,7 +41,8 @@ class Service(object):
                     start=start, end=get_timestamp(), remote=to_millis(response.timestamp))
                 self.is_running = True
             except grpc.aio.AioRpcError as error:
-                log.warning("Could not ping {} - {}", self.name, error.code())
+                log.warning("Could not ping {}/{}/{} - {}",
+                            self.name, self.host, self.port, error.code())
                 self.reset()
 
     def save_request_latency(self, start, end, remote):

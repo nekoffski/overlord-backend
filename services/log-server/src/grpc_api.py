@@ -37,7 +37,8 @@ async def start():
     listen_addr = f"[::]:{utils.GRPC_API_PORT}"
     log.info("Starting grpc server on: {}", listen_addr)
 
-    server = grpc.aio.server(interceptors=(interceptor.RequestLogger(log),))
+    server = grpc.aio.server(interceptors=(
+        interceptor.RequestLogger(log, filters=['ping']),))
     server.add_insecure_port(listen_addr)
 
     proto.register_pinger_service(server)
