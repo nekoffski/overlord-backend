@@ -14,7 +14,8 @@ class StatisticsCollector(object):
         self.interval = interval
         self.services = [
             Service('Log Server', 'log-server', 5555),
-            Service('Mi Proxy', 'mi-proxy', 5555)
+            Service('Device Gateway', 'device-gateway', 5555),
+            Service('Yeelight Connector', 'yeelight-connector', 5555)
         ]
 
     async def start(self):

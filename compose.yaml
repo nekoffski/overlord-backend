@@ -27,8 +27,8 @@ services:
     depends_on:
       log-server:
         condition: service_started
-  mi-proxy:
-    image: "nyek0/overlord-mi-proxy:latest"
+  yeelight-connector:
+    image: "nyek0/overlord-yeelight-connector:latest"
     environment:
       LOG_API_HOST: log-server
       LOG_API_PORT: 5552

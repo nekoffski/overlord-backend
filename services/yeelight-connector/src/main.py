@@ -6,7 +6,7 @@ import api
 
 
 async def main():
-    setup_logger(service_name='overlord-mi-proxy')
+    setup_logger(service_name='overlord-yeelight-connector')
     log.info("Service starting")
 
     await api.start()
