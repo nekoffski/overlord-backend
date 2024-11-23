@@ -35,9 +35,6 @@ export default function SessionsChart({ data }) {
   return (
     <Card variant="outlined" sx={{ width: "100%" }}>
       <CardContent>
-        <Typography component="h2" variant="subtitle2" gutterBottom>
-          {data.name}
-        </Typography>
         <Stack sx={{ justifyContent: "space-between" }}>
           <Stack
             direction="row"
@@ -48,7 +45,7 @@ export default function SessionsChart({ data }) {
             }}
           >
             <Typography
-              variant="h4"
+              variant="h5"
               component="p"
               sx={{
                 color: data.isRunning
@@ -56,7 +53,7 @@ export default function SessionsChart({ data }) {
                   : "rgba(217, 71, 71, 0.8)",
               }}
             >
-              {data.isRunning ? "Healthy" : "Down"}
+              {data.name}
             </Typography>
           </Stack>
           <Typography variant="caption" sx={{ color: "text.secondary" }}>
@@ -90,7 +87,7 @@ export default function SessionsChart({ data }) {
               data: data.isRunning ? data.responseLatencies : [],
             },
           ]}
-          height={250}
+          height={150}
           margin={{ left: 50, right: 20, top: 20, bottom: 20 }}
           grid={{ horizontal: true }}
           sx={{

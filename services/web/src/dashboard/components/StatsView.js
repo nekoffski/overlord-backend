@@ -134,12 +134,12 @@ export default class StatsView extends React.Component {
           columns={12}
           sx={{ mb: (theme) => theme.spacing(2) }}
         >
-          <Grid size={{ xs: 12, md: 6 }}>
+          <Grid size={{ xs: 6, md: 6 }}>
             <SessionsChart data={this.state.api_gateway} />
           </Grid>
           {this.state.services.map((service, _) => {
             return (
-              <Grid size={{ xs: 12, md: 6 }}>
+              <Grid size={{ xs: 6, md: 6 }}>
                 <SessionsChart data={service} />
               </Grid>
             );
