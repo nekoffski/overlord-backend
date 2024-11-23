@@ -17,7 +17,7 @@ class LogServer(proto.LogServerServicer):
         await utils.rotate_log_file()
         return proto.RotateResponse()
 
-    async def getLogs(
+    async def get_logs(
         self,
         request: proto.GetLogsRequest,
         context: grpc.aio.ServicerContext,

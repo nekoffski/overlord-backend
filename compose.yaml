@@ -1,4 +1,9 @@
 services:
+  envoy-grpc-proxy:
+    image: "envoyproxy/envoy:v1.22.0"
+    volumes:
+      - ${CONFIG_DIR}/envoy.yaml:/etc/envoy/envoy.yaml:ro
+    network_mode: "host"
   web:
     image: "nyek0/overlord-web:latest"
     ports:
@@ -6,12 +11,24 @@ services:
   log-server:
     image: "nyek0/overlord-log-server:latest"
     ports:
-      - "5555:5555/tcp"
       - "5552:5552/udp"
     networks:
       - internal
   api-gateway:
     image: "nyek0/overlord-api-gateway:latest"
+    ports:
+      - "5555:5555/tcp"
+    environment:
+      LOG_API_HOST: log-server
+      LOG_API_PORT: 5552
+      LOG_LEVEL: DEBUG
+    networks:
+      - internal
+    depends_on:
+      log-server:
+        condition: service_started
+  mi-proxy:
+    image: "nyek0/overlord-mi-proxy:latest"
     environment:
       LOG_API_HOST: log-server
       LOG_API_PORT: 5552

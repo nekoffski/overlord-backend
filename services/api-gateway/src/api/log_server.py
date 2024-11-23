@@ -17,14 +17,14 @@ class LogServerProxy(proto.LogServerServicer):
             client = proto.LogServerStub(channel)
             return await client.rotate(request)
 
-    async def getLogs(
+    async def get_logs(
         self,
         request: proto.GetLogsRequest,
         context: grpc.aio.ServicerContext,
     ) -> proto.GetLogsResponse:
         async with grpc.aio.insecure_channel(f"{LOG_SERVER_HOST}:{LOG_SERVER_PORT}") as channel:
             client = proto.LogServerStub(channel)
-            return await client.getLogs(request)
+            return await client.get_logs(request)
 
 
 def register_log_server_proxy(server):

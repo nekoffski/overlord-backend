@@ -16,8 +16,7 @@ build_container () {
     service_path=$1
     service_name=$(basename $service_path)
     echo "building" $service_name
-    mkdir $service_path/dist
-    cp -r $lib_dist/*.gz $service_path/dist
+    cp -r $lib_dist $service_path
 
     pushd $service_path
     docker image build -t overlord-$service_name:latest \

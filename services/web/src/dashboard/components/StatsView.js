@@ -57,7 +57,7 @@ export default class StatsView extends React.Component {
   }
 
   gatherStatistics() {
-    this.statsProvider.getStatistics(
+    this.statsProvider.get_statistics(
       new GetStatisticsRequest(),
       [],
       (err, res) => {

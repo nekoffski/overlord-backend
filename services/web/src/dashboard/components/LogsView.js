@@ -18,7 +18,7 @@ export default class MainGrid extends React.Component {
   }
 
   fetchLogs() {
-    this.logServerClient.getLogs(new GetLogsRequest(), [], (err, response) => {
+    this.logServerClient.get_logs(new GetLogsRequest(), [], (err, response) => {
       if (err) {
         console.error(err);
       } else {

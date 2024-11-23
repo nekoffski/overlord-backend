@@ -11,5 +11,5 @@ message GetLogsResponse {
 
 service LogServer {
     rpc rotate(RotateRequest) returns (RotateResponse) {}
-    rpc getLogs(GetLogsRequest) returns (GetLogsResponse) {}
+    rpc get_logs(GetLogsRequest) returns (GetLogsResponse) {}
 }

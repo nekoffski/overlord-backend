@@ -15,5 +15,5 @@ message GetStatisticsResponse {
 }
 
 service StatisticsProvider {
-    rpc getStatistics(GetStatisticsRequest) returns (GetStatisticsResponse) {}
+    rpc get_statistics(GetStatisticsRequest) returns (GetStatisticsResponse) {}
 }

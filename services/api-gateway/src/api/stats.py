@@ -7,7 +7,7 @@ class StatisticsProvider(proto.StatisticsProviderServicer):
     def __init__(self, stats_proxy):
         self.stats_proxy = stats_proxy
 
-    async def getStatistics(
+    async def get_statistics(
         self,
         request: proto.GetStatisticsRequest,
         context: grpc.aio.ServicerContext,
