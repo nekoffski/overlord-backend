@@ -1,15 +1,30 @@
 import asyncio
 
-from overlord.log import log, setup_logger
+# from overlord.log import log, setup_logger
 
-import api
+# import api
+
+
+from yeelight import discover_bulbs
 
 
 async def main():
-    setup_logger(service_name='overlord-yeelight-connector')
-    log.info("Service starting")
+    bulbs = await discover_bulbs()
 
-    await api.start()
+    for bulb in bulbs:
+        await bulb.toggle()
+
+    await asyncio.sleep(5)
+
+    for bulb in bulbs:
+        await bulb.shutdown()
+
+    # print(bulbs)
+
+    # setup_logger(service_name='overlord-yeelight-connector')
+    # log.info("Service starting")
+
+    # await api.start()
 
 
 if __name__ == '__main__':

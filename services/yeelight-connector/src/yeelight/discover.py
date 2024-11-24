@@ -1,29 +1,15 @@
 import asyncio
-import dataclasses
 import socket
 
 from typing import List
+
+from .device_info import DeviceInfo
+from .bulb import Bulb
 
 
 YEELIGHT_MULTICAST_IP = '239.255.255.250'
 YEELIGHT_MULTICAST_PORT = 1982
 YEELIGHT_MULTICAST_ADDR = (YEELIGHT_MULTICAST_IP, YEELIGHT_MULTICAST_PORT)
-
-
-@dataclasses.dataclass
-class DeviceInfo(object):
-    id: int
-    model: str
-    name: str
-    host: str
-    port: int
-    actions: list[str]
-
-    def __hash__(self):
-        return hash(self.id)
-
-    def __eq__(self, other):
-        return other.id == self.id
 
 
 def _broadcast_request(request: str) -> List[str]:
@@ -64,21 +50,22 @@ def _parse_device_response(payload: str) -> DeviceInfo:
         actions=headers['support'].split(' '))
 
 
-async def discover_devices() -> List[DeviceInfo]:
+async def _discover_devices(device_type: str) -> List[DeviceInfo]:
     discover_request = '\r\n'.join([
         'M-SEARCH * HTTP/1.1',
-        'HOST: 239.255.255.250:1982',
+        f'HOST: {YEELIGHT_MULTICAST_IP}:{YEELIGHT_MULTICAST_PORT}',
         'MAN: "ssdp:discover"',
-        'ST: wifi_bulb'
+        f'ST: {device_type}'
     ])
     payloads = await asyncio.to_thread(_broadcast_request, discover_request)
     devices = map(_parse_device_response, payloads)
     return list(set(devices))  # there could be duplicates
 
 
-async def test():
-    print(
-        (await discover_devices())[0]
-    )
+async def discover_bulbs() -> List[DeviceInfo]:
+    devices = await _discover_devices(device_type="wifi_bulb")
+    bulbs = list(map(lambda info: Bulb(info), devices))
 
-asyncio.run(test())
+    for bulb in bulbs:
+        await bulb.connect()
+    return bulbs
