@@ -2,6 +2,10 @@ import asyncio
 import json
 
 from typing import List, Tuple
+
+from overlord.log import log
+from overlord import proto
+
 from .device_info import DeviceInfo
 
 
@@ -12,10 +16,13 @@ class Bulb(object):
         self.writer = None
         self.reader_task = None
         self.next_message_id = 0
+        self.ident = f'Bulb[{self.info.id}]'
 
         required_actions = [
 
         ]
+
+        log.info("{} - created", self.ident)
 
         for action in required_actions:
             if not self.info.supports_action(action):
@@ -23,27 +30,38 @@ class Bulb(object):
                 pass
 
     async def shutdown(self):
+        log.info("{} - shutting down", self.ident)
         self.writer.close()
         await self.writer.wait_closed()
         await self.reader_task
 
+    def to_proto(self) -> proto.Device:
+        return proto.Device(
+            id=self.info.id, name=self.info.name
+        )
+
     async def connect(self):
+        log.info("{} - connecting to the bulb endpoint: {}/{}",
+                 self.ident, self.info.host, self.info.port)
         self.reader, self.writer = await asyncio.open_connection(
             self.info.host, self.info.port)
         self.reader_task = asyncio.create_task(self._read_messages())
 
     async def toggle(self):
-        await self._request('toggle',)
+        await self._request('toggle')
 
     async def _read_messages(self):
         while True:
             response = await self.reader.read(1024)
             if not response:
                 break
-            print(response.decode('utf-8'))
+            response = response.decode('utf-8')
+            log.debug("{} - received message: {}", self.ident, response)
 
     async def _write(self, payload: str):
-        self.writer.write(payload.encode('utf-8'))
+        payload = payload.encode('utf-8')
+        log.debug("{} - sending payload: {}", self.ident, payload)
+        self.writer.write(payload)
         await self.writer.drain()
 
     async def _request(self, method: str, params: Tuple = None) -> int:
@@ -54,6 +72,7 @@ class Bulb(object):
             'method': method,
             'params': params
         }
+        log.debug("{} - sending reqeust: {}", self.ident, request)
         await self._write(json.dumps(request) + '\r\n')
         return request['id']
 

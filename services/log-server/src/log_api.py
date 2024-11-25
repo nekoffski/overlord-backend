@@ -6,6 +6,7 @@ import aiofiles
 import utils
 
 from loguru import logger as log
+from overlord import cfg
 
 
 class LogProtocol(asyncio.DatagramProtocol):
@@ -26,7 +27,7 @@ async def start_log_server(message_queue: asyncio.Queue):
     log.info("starting datagram log endpoint")
 
     await loop.create_datagram_endpoint(
-        lambda: LogProtocol(message_queue), local_addr=('0.0.0.0', utils.LOG_API_PORT))
+        lambda: LogProtocol(message_queue), local_addr=(cfg.LOG_SERVER_HOST, cfg.LOG_SERVER_LOGGER_PORT))
 
 
 async def drain_message_queue(message_queue: asyncio.Queue):

@@ -1,0 +1,14 @@
+syntax = "proto3";
+package overlord;
+
+import "device.proto";
+
+
+message ToggleRequest {
+    int32 id = 1;
+}
+
+service YeelightConnector {
+    rpc discover_devices(DiscoverDevicesRequest) returns (Devices) {}
+    rpc get_devices(GetDevicesRequest) returns (Devices) {}
+}

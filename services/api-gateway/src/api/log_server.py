@@ -1,19 +1,18 @@
 
 import grpc
 
-from overlord import proto
-
-LOG_SERVER_HOST = 'log-server'
-LOG_SERVER_PORT = 5555
+from overlord import proto, cfg
 
 
 class LogServerProxy(proto.LogServerServicer):
+    endpoint = f"{cfg.LOG_SERVER_HOST}:{cfg.LOG_SERVER_GRPC_PORT}"
+
     async def rotate(
         self,
         request: proto.RotateRequest,
         context: grpc.aio.ServicerContext,
     ) -> proto.RotateResponse:
-        async with grpc.aio.insecure_channel(f"{LOG_SERVER_HOST}:{LOG_SERVER_PORT}") as channel:
+        async with grpc.aio.insecure_channel(self.endpoint) as channel:
             client = proto.LogServerStub(channel)
             return await client.rotate(request)
 
@@ -22,7 +21,7 @@ class LogServerProxy(proto.LogServerServicer):
         request: proto.GetLogsRequest,
         context: grpc.aio.ServicerContext,
     ) -> proto.GetLogsResponse:
-        async with grpc.aio.insecure_channel(f"{LOG_SERVER_HOST}:{LOG_SERVER_PORT}") as channel:
+        async with grpc.aio.insecure_channel(self.endpoint) as channel:
             client = proto.LogServerStub(channel)
             return await client.get_logs(request)
 

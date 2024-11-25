@@ -7,8 +7,6 @@ import aiofiles
 from aiofiles.os import wrap
 
 
-GRPC_API_PORT = int(os.getenv('GRPC_API_PORT', '5555'))
-LOG_API_PORT = int(os.getenv('LOG_API_PORT', '5552'))
 LOG_DIRECTORY = f'{os.getcwd()}/log'
 LOG_FILE = f'{LOG_DIRECTORY}/logs.txt'
 

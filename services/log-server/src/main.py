@@ -1,6 +1,6 @@
 import asyncio
 
-from loguru import logger as log
+from overlord.log import log
 
 import log_api
 import grpc_api

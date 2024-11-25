@@ -2,6 +2,7 @@ import asyncio
 import socket
 
 from typing import List
+from overlord.log import log
 
 from .device_info import DeviceInfo
 from .bulb import Bulb
@@ -19,17 +20,21 @@ def _broadcast_request(request: str) -> List[str]:
     s.settimeout(1)
 
     def read_responses() -> str:
+        log.info("Waiting for responses")
         while True:
             try:
-                data, _ = s.recvfrom(1024)
+                data, host = s.recvfrom(1024)
                 if data:
+                    log.info("Got response from: {}", host)
                     yield data.decode()
             except socket.timeout as e:
                 break
+        log.info("All responses processed")
     return list(read_responses())
 
 
 def _parse_headers(payload: str) -> dict:
+    log.debug("Parsing headers")
     headers = {}
     for line in payload.split('\r\n'):
         if ':' not in line:
@@ -57,15 +62,11 @@ async def _discover_devices(device_type: str) -> List[DeviceInfo]:
         'MAN: "ssdp:discover"',
         f'ST: {device_type}'
     ])
+    log.debug("Broadcasting request: {}", discover_request)
     payloads = await asyncio.to_thread(_broadcast_request, discover_request)
     devices = map(_parse_device_response, payloads)
     return list(set(devices))  # there could be duplicates
 
 
 async def discover_bulbs() -> List[DeviceInfo]:
-    devices = await _discover_devices(device_type="wifi_bulb")
-    bulbs = list(map(lambda info: Bulb(info), devices))
-
-    for bulb in bulbs:
-        await bulb.connect()
-    return bulbs
+    return await _discover_devices(device_type="wifi_bulb")

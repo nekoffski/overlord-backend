@@ -3,7 +3,7 @@ import grpc
 import aiofiles
 
 from loguru import logger as log
-from overlord import proto, interceptor
+from overlord import proto, interceptor, cfg
 
 import utils
 
@@ -34,7 +34,7 @@ def register_log_server(server):
 
 
 async def start():
-    listen_addr = f"[::]:{utils.GRPC_API_PORT}"
+    listen_addr = f"[::]:{cfg.LOG_SERVER_GRPC_PORT}"
     log.info("Starting grpc server on: {}", listen_addr)
 
     server = grpc.aio.server(interceptors=(

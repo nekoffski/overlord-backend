@@ -1,0 +1,32 @@
+syntax = "proto3";
+package overlord;
+
+
+message Color {
+    int32 r = 1;
+    int32 g = 2;
+    int32 b = 3;
+}
+
+enum State { 
+    on = 0; 
+    off = 1;
+};
+
+message DeviceStatus {
+    State state = 1;
+    Color color = 2;
+};
+
+message Device {
+    int32 id = 1;
+    string name = 2;
+    DeviceStatus status = 3;
+}
+
+message Devices {
+    repeated Device devices = 1;
+}
+
+message DiscoverDevicesRequest {}
+message GetDevicesRequest {}

@@ -3,10 +3,7 @@ import os
 
 from loguru import logger as log
 
-
-LOG_API_HOST = os.getenv('LOG_API_HOST', '0.0.0.0')
-LOG_API_PORT = int(os.getenv('LOG_API_PORT', '5552'))
-LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')
+from . import cfg
 
 
 class _LogServerStream(object):
@@ -23,7 +20,7 @@ class _LogServerStream(object):
                 "Could not send message to the log server - %s", str(e))
 
 
-def setup_logger(service_name, host=LOG_API_HOST, port=LOG_API_PORT):
+def setup_logger(service_name, host=cfg.LOG_SERVER_HOST, port=cfg.LOG_SERVER_LOGGER_PORT):
     log_server_stream = _LogServerStream((host, port))
 
     def formatter(record):
@@ -38,5 +35,5 @@ def setup_logger(service_name, host=LOG_API_HOST, port=LOG_API_PORT):
         }
         return "{extra[serialized]}\n"
 
-    log.add(log_server_stream, level=LOG_LEVEL, format=formatter)
-    log.info("log server addr: {}:{}, level: {}", host, port, LOG_LEVEL)
+    log.add(log_server_stream, level=cfg.LOG_LEVEL, format=formatter)
+    log.info("log server addr: {}:{}, level: {}", host, port, cfg.LOG_LEVEL)

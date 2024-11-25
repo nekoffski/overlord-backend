@@ -1,13 +1,13 @@
 import grpc
 
 from overlord.log import log
-from overlord import proto, interceptor
+from overlord import proto, interceptor, cfg
 
 from . import stats, log_server
 
 
 async def start(stats_proxy):
-    listen_addr = "[::]:5555"
+    listen_addr = f"[::]:{cfg.API_GATEWAY_GRPC_PORT}"
     log.info("Starting grpc server on: {}", listen_addr)
 
     server = grpc.aio.server(interceptors=(

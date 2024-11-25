@@ -10,45 +10,26 @@ services:
       - "80:3000/tcp"
   log-server:
     image: "nyek0/overlord-log-server:latest"
-    ports:
-      - "5552:5552/udp"
-    networks:
-      - internal
+    env_file: "${CONFIG_DIR}/overlord.env"
+    network_mode: "host"
   api-gateway:
     image: "nyek0/overlord-api-gateway:latest"
-    ports:
-      - "5555:5555/tcp"
-    environment:
-      LOG_API_HOST: log-server
-      LOG_API_PORT: 5552
-      LOG_LEVEL: DEBUG
-    networks:
-      - internal
+    env_file: "${CONFIG_DIR}/overlord.env"
+    network_mode: "host"
     depends_on:
       log-server:
         condition: service_started
   device-gateway:
     image: "nyek0/overlord-device-gateway:latest"
-    environment:
-      LOG_API_HOST: log-server
-      LOG_API_PORT: 5552
-      LOG_LEVEL: DEBUG
-    networks:
-      - internal
+    env_file: "${CONFIG_DIR}/overlord.env"
+    network_mode: "host"
     depends_on:
       log-server:
         condition: service_started
   yeelight-connector:
     image: "nyek0/overlord-yeelight-connector:latest"
-    environment:
-      LOG_API_HOST: log-server
-      LOG_API_PORT: 5552
-      LOG_LEVEL: DEBUG
-    networks:
-      - internal
+    env_file: "${CONFIG_DIR}/overlord.env"
+    network_mode: "host"
     depends_on:
       log-server:
         condition: service_started
-networks:
-  internal:
-    driver: bridge
