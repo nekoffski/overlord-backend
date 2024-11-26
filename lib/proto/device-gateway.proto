@@ -7,4 +7,5 @@ import "device.proto";
 service DeviceGateway {
     rpc discover_devices(DiscoverDevicesRequest) returns (Devices) {}
     rpc get_devices(GetDevicesRequest) returns (Devices) {}
+    rpc toggle(ToggleRequest) returns (AckResponse) {}
 }

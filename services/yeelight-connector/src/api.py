@@ -26,6 +26,16 @@ class YeelightConnector(proto.YeelightConnectorServicer):
     ) -> proto.Devices:
         return proto.Devices(devices=self.bulb_manager.get_bulbs_info())
 
+    async def toggle(
+        self,
+        request: proto.ToggleRequest,
+        context: grpc.aio.ServicerContext,
+    ) -> proto.AckResponse:
+        log.debug("Received toggle request for bulbs: {}", request)
+        for id in request.ids:
+            await self.bulb_manager.get_bulb(bulb_id=id).toggle()
+        return proto.AckResponse()
+
 
 def register_yeelight_connector_service(server, bulb_manager: BulbManager):
     proto.add_YeelightConnectorServicer_to_server(
@@ -36,8 +46,9 @@ async def start(bulb_manager: BulbManager):
     listen_addr = f"[::]:{cfg.YEELIGHT_CONNECTOR_GRPC_PORT}"
     log.info("Starting grpc server on: {}", listen_addr)
 
-    server = grpc.aio.server(interceptors=(
-        interceptor.RequestLogger(log, filters=['ping']),))
+    server = grpc.aio.server(
+        interceptors=(interceptor.ErrorLogger(log),
+                      interceptor.RequestLogger(log, filters=['ping']),))
     server.add_insecure_port(listen_addr)
 
     proto.register_pinger_service(server)

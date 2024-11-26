@@ -25,6 +25,14 @@ class DeviceGateway(proto.DeviceGatewayServicer):
         async with grpc.aio.insecure_channel(self.yeelight_endpoint) as channel:
             return await proto.YeelightConnectorStub(channel).get_devices(request)
 
+    async def toggle(
+        self,
+        request: proto.ToggleRequest,
+        context: grpc.aio.ServicerContext,
+    ) -> proto.AckResponse:
+        async with grpc.aio.insecure_channel(self.yeelight_endpoint) as channel:
+            return await proto.YeelightConnectorStub(channel).toggle(request)
+
 
 def register_device_gateway_service(server):
     proto.add_DeviceGatewayServicer_to_server(
@@ -35,8 +43,9 @@ async def start():
     listen_addr = f"[::]:{cfg.DEVICE_GATEWAY_GRPC_PORT}"
     log.info("Starting grpc server on: {}", listen_addr)
 
-    server = grpc.aio.server(interceptors=(
-        interceptor.RequestLogger(log, filters=['ping']),))
+    server = grpc.aio.server(
+        interceptors=(interceptor.ErrorLogger(log),
+                      interceptor.RequestLogger(log, filters=['ping']),))
     server.add_insecure_port(listen_addr)
 
     proto.register_pinger_service(server)

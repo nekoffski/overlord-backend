@@ -30,3 +30,9 @@ message Devices {
 
 message DiscoverDevicesRequest {}
 message GetDevicesRequest {}
+
+message ToggleRequest {
+    repeated int32 ids = 1;
+}
+
+message AckResponse {}

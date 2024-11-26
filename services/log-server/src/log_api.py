@@ -34,7 +34,6 @@ async def drain_message_queue(message_queue: asyncio.Queue):
     async with aiofiles.open(utils.LOG_FILE, 'a') as f:
         while not message_queue.empty():
             message = await message_queue.get()
-            print(message)
             await f.write(message)
 
 

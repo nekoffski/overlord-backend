@@ -5,7 +5,7 @@ import Typography from "@mui/material/Typography";
 import { LogServerClient } from "./proto/log-server_grpc_web_pb";
 import { GetLogsRequest } from "./proto/log-server_pb";
 
-export default class MainGrid extends React.Component {
+export default class LogsView extends React.Component {
   state = {
     logs: [],
   };
