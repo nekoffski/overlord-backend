@@ -2,11 +2,6 @@ syntax = "proto3";
 package overlord;
 
 
-message Color {
-    int32 r = 1;
-    int32 g = 2;
-    int32 b = 3;
-}
 
 enum State { 
     on = 0; 
@@ -15,7 +10,6 @@ enum State {
 
 message DeviceStatus {
     State state = 1;
-    Color color = 2;
 };
 
 message Device {
@@ -33,6 +27,25 @@ message GetDevicesRequest {}
 
 message ToggleRequest {
     repeated int32 ids = 1;
+}
+
+message SetHsvRequest {
+    repeated int32 ids = 1;
+    int32 h = 2;
+    int32 s = 3;
+    int32 v = 4;
+};
+
+message SetRgbRequest {
+    repeated int32 ids = 1;
+    int32 r = 2;
+    int32 g = 3;
+    int32 b = 4;
+}
+
+message SetBrightnessRequest {
+    repeated int32 ids =1;
+    int32 brightness = 2;
 }
 
 message AckResponse {}

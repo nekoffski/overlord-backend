@@ -5,7 +5,10 @@ import "device.proto";
 
 
 service YeelightConnector {
-    rpc discover_devices(DiscoverDevicesRequest) returns (Devices) {}
+    rpc discover_devices(DiscoverDevicesRequest) returns (AckResponse) {}
     rpc get_devices(GetDevicesRequest) returns (Devices) {}
     rpc toggle(ToggleRequest) returns (AckResponse) {}
+    rpc set_rgb(SetRgbRequest) returns (AckResponse) {}
+    rpc set_hsv(SetHsvRequest) returns (AckResponse) {}
+    rpc set_brightness(SetBrightnessRequest) returns (AckResponse) {}
 }

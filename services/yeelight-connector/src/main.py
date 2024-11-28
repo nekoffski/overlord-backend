@@ -14,6 +14,7 @@ async def main():
     log.info("Service starting")
 
     bulb_manager = BulbManager()
+    await bulb_manager.discover()
     await api.start(bulb_manager)
 
 

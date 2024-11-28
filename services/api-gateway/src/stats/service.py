@@ -41,7 +41,7 @@ class Service(object):
                     start=start, end=get_timestamp(), remote=to_millis(response.timestamp))
                 self.is_running = True
             except grpc.aio.AioRpcError as error:
-                log.warning("Could not ping {}/{}/{} - {}",
+                log.warning("Could not ping {} - {}:{} - {}",
                             self.name, self.host, self.port, error.code())
                 self.reset()
 

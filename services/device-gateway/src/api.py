@@ -13,7 +13,7 @@ class DeviceGateway(proto.DeviceGatewayServicer):
         self,
         request: proto.DiscoverDevicesRequest,
         context: grpc.aio.ServicerContext,
-    ) -> proto.Devices:
+    ) -> proto.AckResponse:
         async with grpc.aio.insecure_channel(self.yeelight_endpoint) as channel:
             return await proto.YeelightConnectorStub(channel).discover_devices(request)
 
@@ -33,6 +33,30 @@ class DeviceGateway(proto.DeviceGatewayServicer):
         async with grpc.aio.insecure_channel(self.yeelight_endpoint) as channel:
             return await proto.YeelightConnectorStub(channel).toggle(request)
 
+    async def set_rgb(
+        self,
+        request: proto.SetRgbRequest,
+        context: grpc.aio.ServicerContext,
+    ) -> proto.AckResponse:
+        async with grpc.aio.insecure_channel(self.yeelight_endpoint) as channel:
+            return await proto.YeelightConnectorStub(channel).set_rgb(request)
+
+    async def set_hsv(
+        self,
+        request: proto.SetHsvRequest,
+        context: grpc.aio.ServicerContext,
+    ) -> proto.AckResponse:
+        async with grpc.aio.insecure_channel(self.yeelight_endpoint) as channel:
+            return await proto.YeelightConnectorStub(channel).set_hsv(request)
+
+    async def set_brightness(
+        self,
+        request: proto.SetBrightnessRequest,
+        context: grpc.aio.ServicerContext,
+    ) -> proto.AckResponse:
+        async with grpc.aio.insecure_channel(self.yeelight_endpoint) as channel:
+            return await proto.YeelightConnectorStub(channel).set_brightness(request)
+
 
 def register_device_gateway_service(server):
     proto.add_DeviceGatewayServicer_to_server(
@@ -45,7 +69,7 @@ async def start():
 
     server = grpc.aio.server(
         interceptors=(interceptor.ErrorLogger(log),
-                      interceptor.RequestLogger(log, filters=['ping']),))
+                      interceptor.RequestLogger(log, filters=['ping', "get_"]),))
     server.add_insecure_port(listen_addr)
 
     proto.register_pinger_service(server)

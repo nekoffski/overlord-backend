@@ -15,9 +15,9 @@ class YeelightConnector(proto.YeelightConnectorServicer):
         self,
         request: proto.DiscoverDevicesRequest,
         context: grpc.aio.ServicerContext,
-    ) -> proto.Devices:
+    ) -> proto.AckResponse:
         await self.bulb_manager.discover()
-        return proto.Devices(devices=self.bulb_manager.get_bulbs_info())
+        return proto.AckResponse()
 
     async def get_devices(
         self,
@@ -36,6 +36,40 @@ class YeelightConnector(proto.YeelightConnectorServicer):
             await self.bulb_manager.get_bulb(bulb_id=id).toggle()
         return proto.AckResponse()
 
+    async def set_rgb(
+        self,
+        request: proto.SetRgbRequest,
+        context: grpc.aio.ServicerContext,
+    ) -> proto.AckResponse:
+        log.debug("Received set_rgb request for bulbs: {}", request)
+        for id in request.ids:
+            await self.bulb_manager.get_bulb(bulb_id=id).set_rgb(
+                request.r, request.b, request.b)
+        return proto.AckResponse()
+
+    async def set_hsv(
+        self,
+        request: proto.SetHsvRequest,
+        context: grpc.aio.ServicerContext,
+    ) -> proto.AckResponse:
+        log.debug("Received set_hsv request for bulbs: {}", request)
+        for id in request.ids:
+            await self.bulb_manager.get_bulb(bulb_id=id).set_hsv(
+                request.h, request.s, request.v)
+        return proto.AckResponse()
+
+    async def set_brightness(
+        self,
+        request: proto.SetBrightnessRequest,
+        context: grpc.aio.ServicerContext,
+    ) -> proto.AckResponse:
+        log.debug("Received set_brightness request for bulbs: {}", request)
+        for id in request.ids:
+            await self.bulb_manager.get_bulb(bulb_id=id).set_brightness(
+                request.brightness
+            )
+        return proto.AckResponse()
+
 
 def register_yeelight_connector_service(server, bulb_manager: BulbManager):
     proto.add_YeelightConnectorServicer_to_server(
@@ -48,7 +82,7 @@ async def start(bulb_manager: BulbManager):
 
     server = grpc.aio.server(
         interceptors=(interceptor.ErrorLogger(log),
-                      interceptor.RequestLogger(log, filters=['ping']),))
+                      interceptor.RequestLogger(log, filters=['ping', "get_"]),))
     server.add_insecure_port(listen_addr)
 
     proto.register_pinger_service(server)

@@ -12,7 +12,7 @@ async def start(stats_proxy):
 
     server = grpc.aio.server(
         interceptors=(interceptor.ErrorLogger(log),
-                      interceptor.RequestLogger(log, filters=['ping', 'get_statistics']),))
+                      interceptor.RequestLogger(log, filters=['ping', 'get_']),))
     server.add_insecure_port(listen_addr)
 
     proto.register_pinger_service(server)

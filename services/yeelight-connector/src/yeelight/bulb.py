@@ -16,7 +16,8 @@ class Bulb(object):
         self.writer = None
         self.reader_task = None
         self.next_message_id = 0
-        self.ident = f'Bulb[{self.info.id}]'
+        self.ident = f'Bulb[yeelight://{self.info.host}:{
+            self.info.port}/{hex(self.info.id)}]'
 
         required_actions = [
 
@@ -49,6 +50,18 @@ class Bulb(object):
 
     async def toggle(self):
         await self._request('toggle')
+
+    async def set_hsv(self, h: int, s: int, v: int, transition='smooth', duration=500):
+        await self._request('set_hsv', params=[h, s, transition, duration])
+        await self.set_brightness(brightness=v)
+
+    async def set_rgb(self, r: int, g: int, b: int, transition='smooth', duration=500):
+        # each color component represented by 1 byte, top byte is red and bottom byte is blue
+        rgb = (r << 16) + (g << 8) + b
+        await self._request('set_rgb', params=[rgb, transition, duration])
+
+    async def set_brightness(self, brightness: int, transition='smooth', duration=500):
+        await self._request('set_bright', params=[brightness, transition, duration])
 
     async def _read_messages(self):
         while True:

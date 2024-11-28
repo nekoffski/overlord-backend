@@ -11,7 +11,7 @@ class DeviceGatewayProxy(proto.DeviceGatewayServicer):
         self,
         request: proto.DiscoverDevicesRequest,
         context: grpc.aio.ServicerContext,
-    ) -> proto.Devices:
+    ) -> proto.AckResponse:
         async with grpc.aio.insecure_channel(self.endpoint) as channel:
             return await proto.DeviceGatewayStub(channel).discover_devices(request)
 
@@ -30,6 +30,30 @@ class DeviceGatewayProxy(proto.DeviceGatewayServicer):
     ) -> proto.AckResponse:
         async with grpc.aio.insecure_channel(self.endpoint) as channel:
             return await proto.DeviceGatewayStub(channel).toggle(request)
+
+    async def set_rgb(
+        self,
+        request: proto.SetRgbRequest,
+        context: grpc.aio.ServicerContext,
+    ) -> proto.AckResponse:
+        async with grpc.aio.insecure_channel(self.endpoint) as channel:
+            return await proto.DeviceGatewayStub(channel).set_rgb(request)
+
+    async def set_hsv(
+        self,
+        request: proto.SetHsvRequest,
+        context: grpc.aio.ServicerContext,
+    ) -> proto.AckResponse:
+        async with grpc.aio.insecure_channel(self.endpoint) as channel:
+            return await proto.DeviceGatewayStub(channel).set_hsv(request)
+
+    async def set_brightness(
+        self,
+        request: proto.SetBrightnessRequest,
+        context: grpc.aio.ServicerContext,
+    ) -> proto.AckResponse:
+        async with grpc.aio.insecure_channel(self.endpoint) as channel:
+            return await proto.DeviceGatewayStub(channel).set_brightness(request)
 
 
 def register_device_gateway_proxy(server):
