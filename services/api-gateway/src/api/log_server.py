@@ -2,11 +2,13 @@
 import grpc
 
 from overlord import proto, cfg
+from overlord.log import log_errors
 
 
 class LogServerProxy(proto.LogServerServicer):
     endpoint = f"{cfg.LOG_SERVER_HOST}:{cfg.LOG_SERVER_GRPC_PORT}"
 
+    @log_errors()
     async def rotate(
         self,
         request: proto.RotateRequest,
@@ -16,6 +18,7 @@ class LogServerProxy(proto.LogServerServicer):
             client = proto.LogServerStub(channel)
             return await client.rotate(request)
 
+    @log_errors()
     async def get_logs(
         self,
         request: proto.GetLogsRequest,

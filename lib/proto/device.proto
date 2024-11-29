@@ -44,8 +44,14 @@ message SetRgbRequest {
 }
 
 message SetBrightnessRequest {
-    repeated int32 ids =1;
+    repeated int32 ids = 1;
     int32 brightness = 2;
+}
+
+message SetMusicModeRequest {
+    string host = 1;
+    int32 port = 2;
+    repeated int32 ids = 3;
 }
 
 message AckResponse {}

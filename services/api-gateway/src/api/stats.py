@@ -1,12 +1,14 @@
 import grpc
 
 from overlord import proto
+from overlord.log import log_errors
 
 
 class StatisticsProvider(proto.StatisticsProviderServicer):
     def __init__(self, stats_proxy):
         self.stats_proxy = stats_proxy
 
+    @log_errors()
     async def get_statistics(
         self,
         request: proto.GetStatisticsRequest,

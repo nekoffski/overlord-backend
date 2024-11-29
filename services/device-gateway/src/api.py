@@ -2,13 +2,14 @@
 import grpc
 
 from overlord import proto, interceptor, cfg
-from overlord.log import log
+from overlord.log import log, log_errors
 
 
 class DeviceGateway(proto.DeviceGatewayServicer):
     yeelight_endpoint = f'{cfg.YEELIGHT_CONNECTOR_HOST}:{
         cfg.YEELIGHT_CONNECTOR_GRPC_PORT}'
 
+    @log_errors()
     async def discover_devices(
         self,
         request: proto.DiscoverDevicesRequest,
@@ -17,6 +18,7 @@ class DeviceGateway(proto.DeviceGatewayServicer):
         async with grpc.aio.insecure_channel(self.yeelight_endpoint) as channel:
             return await proto.YeelightConnectorStub(channel).discover_devices(request)
 
+    @log_errors()
     async def get_devices(
         self,
         request: proto.GetDevicesRequest,
@@ -25,6 +27,7 @@ class DeviceGateway(proto.DeviceGatewayServicer):
         async with grpc.aio.insecure_channel(self.yeelight_endpoint) as channel:
             return await proto.YeelightConnectorStub(channel).get_devices(request)
 
+    @log_errors()
     async def toggle(
         self,
         request: proto.ToggleRequest,
@@ -33,6 +36,7 @@ class DeviceGateway(proto.DeviceGatewayServicer):
         async with grpc.aio.insecure_channel(self.yeelight_endpoint) as channel:
             return await proto.YeelightConnectorStub(channel).toggle(request)
 
+    @log_errors()
     async def set_rgb(
         self,
         request: proto.SetRgbRequest,
@@ -41,6 +45,7 @@ class DeviceGateway(proto.DeviceGatewayServicer):
         async with grpc.aio.insecure_channel(self.yeelight_endpoint) as channel:
             return await proto.YeelightConnectorStub(channel).set_rgb(request)
 
+    @log_errors()
     async def set_hsv(
         self,
         request: proto.SetHsvRequest,
@@ -49,6 +54,7 @@ class DeviceGateway(proto.DeviceGatewayServicer):
         async with grpc.aio.insecure_channel(self.yeelight_endpoint) as channel:
             return await proto.YeelightConnectorStub(channel).set_hsv(request)
 
+    @log_errors()
     async def set_brightness(
         self,
         request: proto.SetBrightnessRequest,
@@ -68,8 +74,8 @@ async def start():
     log.info("Starting grpc server on: {}", listen_addr)
 
     server = grpc.aio.server(
-        interceptors=(interceptor.ErrorLogger(log),
-                      interceptor.RequestLogger(log, filters=['ping', "get_"]),))
+        interceptors=(
+            interceptor.RequestLogger(log, filters=['ping', "get_"]),))
     server.add_insecure_port(listen_addr)
 
     proto.register_pinger_service(server)

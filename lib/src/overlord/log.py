@@ -17,7 +17,7 @@ class _LogServerStream(object):
             self.socket.sendto(message.encode('utf-8'), self.addr)
         except Exception as e:
             log.warning(
-                "Could not send message to the log server - %s", str(e))
+                "Could not send message to the log server - {}", str(e))
 
 
 def setup_logger(service_name, host=cfg.LOG_SERVER_HOST, port=cfg.LOG_SERVER_LOGGER_PORT):
@@ -37,3 +37,14 @@ def setup_logger(service_name, host=cfg.LOG_SERVER_HOST, port=cfg.LOG_SERVER_LOG
 
     log.add(log_server_stream, level=cfg.LOG_LEVEL, format=formatter)
     log.info("log server addr: {}:{}, level: {}", host, port, cfg.LOG_LEVEL)
+
+
+def log_errors(log=log):
+    def deco(func):
+        async def wrapper(*args, **kwargs):
+            try:
+                return await func(*args, **kwargs)
+            except Exception as e:
+                log.error("Caught error: {}", str(e))
+        return wrapper
+    return deco

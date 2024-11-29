@@ -2,11 +2,13 @@
 import grpc
 
 from overlord import proto, cfg
+from overlord.log import log_errors
 
 
 class DeviceGatewayProxy(proto.DeviceGatewayServicer):
     endpoint = f"{cfg.DEVICE_GATEWAY_HOST}:{cfg.DEVICE_GATEWAY_GRPC_PORT}"
 
+    @log_errors()
     async def discover_devices(
         self,
         request: proto.DiscoverDevicesRequest,
@@ -15,6 +17,7 @@ class DeviceGatewayProxy(proto.DeviceGatewayServicer):
         async with grpc.aio.insecure_channel(self.endpoint) as channel:
             return await proto.DeviceGatewayStub(channel).discover_devices(request)
 
+    @log_errors()
     async def get_devices(
         self,
         request: proto.GetDevicesRequest,
@@ -23,6 +26,7 @@ class DeviceGatewayProxy(proto.DeviceGatewayServicer):
         async with grpc.aio.insecure_channel(self.endpoint) as channel:
             return await proto.DeviceGatewayStub(channel).get_devices(request)
 
+    @log_errors()
     async def toggle(
         self,
         request: proto.ToggleRequest,
@@ -31,6 +35,7 @@ class DeviceGatewayProxy(proto.DeviceGatewayServicer):
         async with grpc.aio.insecure_channel(self.endpoint) as channel:
             return await proto.DeviceGatewayStub(channel).toggle(request)
 
+    @log_errors()
     async def set_rgb(
         self,
         request: proto.SetRgbRequest,
@@ -39,6 +44,7 @@ class DeviceGatewayProxy(proto.DeviceGatewayServicer):
         async with grpc.aio.insecure_channel(self.endpoint) as channel:
             return await proto.DeviceGatewayStub(channel).set_rgb(request)
 
+    @log_errors()
     async def set_hsv(
         self,
         request: proto.SetHsvRequest,
@@ -47,6 +53,7 @@ class DeviceGatewayProxy(proto.DeviceGatewayServicer):
         async with grpc.aio.insecure_channel(self.endpoint) as channel:
             return await proto.DeviceGatewayStub(channel).set_hsv(request)
 
+    @log_errors()
     async def set_brightness(
         self,
         request: proto.SetBrightnessRequest,
