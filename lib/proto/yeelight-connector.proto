@@ -11,5 +11,7 @@ service YeelightConnector {
     rpc set_rgb(SetRgbRequest) returns (AckResponse) {}
     rpc set_hsv(SetHsvRequest) returns (AckResponse) {}
     rpc set_brightness(SetBrightnessRequest) returns (AckResponse) {}
-    rpc set_music_mode(SetMusicModeRequest) returns (AckResponse) {}
+    rpc enable_music_mode(EnableMusicModeRequest) returns (AckResponse) {}
+    rpc disable_music_mode(DisableMusicModeRequest) returns (AckResponse) {}
+    rpc listen_to_notifications(StartNotificationStream) returns (stream DeviceEvent) {}
 }

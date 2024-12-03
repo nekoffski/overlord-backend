@@ -1,16 +1,15 @@
 syntax = "proto3";
 package overlord;
 
-
-
-enum State { 
-    on = 0; 
-    off = 1;
-};
+enum State {
+    UNKNOWN = 0; 
+    OFF = 1;
+    ON = 2; 
+}
 
 message DeviceStatus {
     State state = 1;
-};
+}
 
 message Device {
     int32 id = 1;
@@ -22,6 +21,54 @@ message Devices {
     repeated Device devices = 1;
 }
 
+enum EventCategory {
+    UKNONW = 0;
+    DEVICE = 1;
+}
+
+enum DeviceEventType {
+    UKNOWN = 0;
+    STATE_CHANGED = 1;
+    COLOR_CHANGED = 2;
+    BRIGHTNESS_CHANGED = 3;
+}
+
+message DeviceStateChanged {
+    State state = 1;
+}
+
+message DeviceBrightnessChanged {
+    int32 brightness = 1;
+}
+
+message DeviceColorChanged {
+    int32 h = 1;
+    int32 s = 2;
+    int32 r = 3;
+    int32 g = 4;
+    int32 b = 5;
+}
+
+message DeviceEvent {
+    int32 device_id = 1;
+    DeviceEventType type = 2;
+
+    oneof DeviceEventBody {
+        DeviceStateChanged state_changed = 3;
+        DeviceBrightnessChanged brightness_changed = 4;
+        DeviceColorChanged color_changed = 5;
+    }   
+}
+
+message Event {
+    EventCategory category = 1;
+
+    oneof EventBody {
+        DeviceEvent device_event = 2;
+    }
+}
+
+message StartNotificationStream {}
 message DiscoverDevicesRequest {}
 message GetDevicesRequest {}
 
@@ -48,10 +95,14 @@ message SetBrightnessRequest {
     int32 brightness = 2;
 }
 
-message SetMusicModeRequest {
+message EnableMusicModeRequest {
     string host = 1;
     int32 port = 2;
     repeated int32 ids = 3;
+}
+
+message DisableMusicModeRequest {
+    repeated int32 ids = 1;
 }
 
 message AckResponse {}

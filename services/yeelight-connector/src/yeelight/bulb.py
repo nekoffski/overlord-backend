@@ -9,14 +9,15 @@ from overlord import proto
 
 from .device_info import DeviceInfo
 
+from event import EventProducer
+
 
 DEFAULT_SWITCH_DURATION = 2000
 MAX_MESSAGE_ID = 1 << 8
 
 
 class Bulb(object):
-
-    def __init__(self, device_info: DeviceInfo):
+    def __init__(self, device_info: DeviceInfo, event_producer: EventProducer):
         self.info = device_info
         self.reader = None
         self.writer = None
@@ -24,6 +25,7 @@ class Bulb(object):
         self.next_message_id = 0
         self.ident = f'Bulb[yeelight://{self.info.host}:{
             self.info.port}/{hex(self.info.id)}]'
+        self.event_producer = event_producer
 
         self.responses = {}
 
@@ -55,6 +57,14 @@ class Bulb(object):
         self.reader, self.writer = await asyncio.open_connection(
             self.info.host, self.info.port)
         self.reader_task = asyncio.create_task(self._read_messages())
+
+    async def enable_music_mode(self, host: str, port: int):
+        id = await self._request('set_music', params=[1, host, port])
+        await self._expect_ok(id)
+
+    async def disable_music_mode(self):
+        id = await self._request('set_music', params=[0])
+        await self._expect_ok(id)
 
     async def toggle(self):
         id = await self._request('toggle')
@@ -95,19 +105,26 @@ class Bulb(object):
 
     async def _read_messages(self):
         while True:
-            response = await self.reader.read(1024)
-            if not response:
+            payload = await self.reader.read(1024)
+
+            if not payload:
                 break
-            response = json.loads(response.decode('utf-8'))
-            log.debug("{} - received message: {}", self.ident, response)
 
-            if 'id' in response and 'result' in response:
-                self.responses[response['id']] = response['result']
-            elif 'method' in response and 'params' in response:
-                self._process_event(response['params'])
+            for response in payload.decode('utf-8').split('\r\n'):
+                if len(response) == 0:
+                    continue
+                try:
+                    response = json.loads(response)
+                    log.debug("{} - received message: {}",
+                              self.ident, response)
 
-    def _process_event(self, event: dict):
-        log.debug("{} - got event: {}", self.ident, event)
+                    if 'id' in response and 'result' in response:
+                        self.responses[response['id']] = response['result']
+                    elif 'method' in response and 'params' in response:
+                        await self.event_producer.emit(response['params'], device_id=self.info.id)
+                except Exception as e:
+                    log.warning(
+                        "Could not process response: {} - {}", response, e)
 
     async def _write(self, payload: str):
         payload = payload.encode('utf-8')

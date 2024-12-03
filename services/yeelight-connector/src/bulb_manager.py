@@ -6,11 +6,13 @@ from overlord.log import log
 from overlord import proto
 
 from yeelight import Bulb, discover_bulbs
+from event import EventManager, EventProducer
 
 
 class BulbManager(object):
-    def __init__(self):
+    def __init__(self, event_manager: EventManager):
         self.bulbs = {}
+        self.event_manager = event_manager
 
     async def discover(self):
         log.info("Looking for devices in local network")
@@ -18,7 +20,7 @@ class BulbManager(object):
             if bulb_info.id in self.bulbs:
                 log.info("Bulb '{}' already stored, skipping", bulb_info.id)
                 continue
-            bulb = Bulb(bulb_info)
+            bulb = Bulb(bulb_info, self.event_manager.create_producer())
             log.info("Found bulb: {}, connecting...", bulb_info)
             await bulb.connect()
             self.bulbs[bulb_info.id] = bulb
